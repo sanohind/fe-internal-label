@@ -20,18 +20,28 @@ export default function DataTableThree() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [prodNoFilter, setProdNoFilter] = useState<string>("");
+  const [prodIndexFilter, setProdIndexFilter] = useState<string>("");
+  const [availableProdIndexes, setAvailableProdIndexes] = useState<string[]>([]);
 
-  // Fetch data from API (fetch all data once)
+  // Fetch data from API with prod_index filter
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await labelAPI.getProdHeaders();
-        
+        const response = await labelAPI.getProdHeaders(prodIndexFilter || undefined);
+
         if (response.success) {
           setTableRowData(response.data);
           setFilteredData(response.data);
+
+          // Extract unique prod_index values for the filter dropdown
+          if (!prodIndexFilter) {
+            const uniqueIndexes = Array.from(
+              new Set(response.data.map(item => item.prod_index))
+            ).sort((a, b) => b.localeCompare(a)); // Sort descending (newest first)
+            setAvailableProdIndexes(uniqueIndexes);
+          }
         } else {
           setError(response.message || 'Failed to fetch data');
         }
@@ -44,7 +54,7 @@ export default function DataTableThree() {
     };
 
     fetchData();
-  }, []);
+  }, [prodIndexFilter]);
 
   // Filter data when search term changes
   useEffect(() => {
@@ -83,6 +93,11 @@ export default function DataTableThree() {
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProdNoFilter(e.target.value);
+  };
+
+  const handleProdIndexFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setProdIndexFilter(e.target.value);
+    setCurrentPage(1);
   };
 
   // Navigate to label detail page
@@ -125,6 +140,30 @@ export default function DataTableThree() {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          {/* Prod Index Filter Dropdown */}
+          <div className="relative z-20 bg-transparent">
+            <select
+              className="w-full py-2 pl-3 pr-8 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[80px]"
+              value={prodIndexFilter}
+              onChange={handleProdIndexFilterChange}
+            >
+              <option value="" className="text-gray-500 dark:bg-gray-900 dark:text-gray-400">
+                All
+              </option>
+              {availableProdIndexes.map((index) => (
+                <option key={index} value={index} className="text-gray-500 dark:bg-gray-900 dark:text-gray-400">
+                  {index}
+                </option>
+              ))}
+            </select>
+            <span className="absolute z-30 text-gray-500 -translate-y-1/2 right-2 top-1/2 dark:text-gray-400">
+              <svg className="stroke-current" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3.8335 5.9165L8.00016 10.0832L12.1668 5.9165" stroke="" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </div>
+
+          {/* Search Input */}
           <div className="relative">
             <button className="absolute text-gray-500 -translate-y-1/2 left-4 top-1/2 dark:text-gray-400">
               <svg className="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -189,7 +228,7 @@ export default function DataTableThree() {
                       <span className="font-normal text-gray-800 text-theme-sm dark:text-white/90">{item.prod_index}</span>
                     </TableCell>
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap">
-                      <button 
+                      <button
                         onClick={() => handleProdNoClick(item.prod_no)}
                         className="text-brand-500 hover:text-brand-600 hover:underline cursor-pointer transition-colors"
                       >

@@ -1,7 +1,7 @@
 export default function SpinnerOne() {
   return (
     <div className="flex items-center justify-center gap-4 sm:justify-normal">
-      <div className="text-gray-200 animate-spin stroke-brand-500 dark:text-gray-800">
+      {/* <div className="text-gray-200 animate-spin stroke-brand-500 dark:text-gray-800">
         <svg
           width="20"
           height="20"
@@ -107,7 +107,7 @@ export default function SpinnerOne() {
             mask="url(#path-2-inside-1_3755_26211)"
           />
         </svg>
-      </div>
+      </div> */}
 
       <div className="text-gray-200 animate-spin stroke-brand-500 dark:text-gray-800">
         <svg

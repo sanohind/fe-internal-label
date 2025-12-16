@@ -5,10 +5,13 @@ export default function LabelList() {
   return (
     <>
       <PageMeta
-        title="React.js Ecommerce Dashboard | TailAdmin - React.js Admin Dashboard Template"
-        description="This is React.js Ecommerce Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Label List"
+        description="Label List"
       />
       <div className="grid grid-cols-1 gap-4 md:gap-6">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          Label List
+        </h2>
         <LabelTable />
       </div>
     </>

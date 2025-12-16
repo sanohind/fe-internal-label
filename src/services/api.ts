@@ -114,9 +114,10 @@ export async function fetchAPI<T>(
 
 // Specific API endpoints
 export const labelAPI = {
-  // Get all prod headers (no server-side filtering)
-  getProdHeaders: async (): Promise<ApiResponse<ProdHeader[]>> => {
-    return fetchAPI<ProdHeader[]>(`/api/labels/prod-headers`);
+  // Get all prod headers with optional prod_index filter
+  getProdHeaders: async (prodIndex?: string): Promise<ApiResponse<ProdHeader[]>> => {
+    const queryParam = prodIndex ? `?prod_index=${prodIndex}` : '';
+    return fetchAPI<ProdHeader[]>(`/api/labels/prod-headers${queryParam}`);
   },
 
   // Get printable labels for a specific prod_no

@@ -12,6 +12,7 @@ import Button from "../../components/ui/button/Button";
 import { Printer, ArrowLeft } from 'lucide-react';
 import { labelAPI, PrintableLabel, PrintableLabelsResponse } from "../../services/api";
 import { openPDFInNewTab } from "../../components/print/PrintLabel";
+import SpinnerOne from "../../components/ui/spinner/SpinnerOne";
 
 export default function LabelDetail() {
   const { prodNo } = useParams<{ prodNo: string }>();
@@ -23,6 +24,7 @@ export default function LabelDetail() {
   const [prodHeader, setProdHeader] = useState<PrintableLabelsResponse['prod_header'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isPrintingPDF, setIsPrintingPDF] = useState(false);
 
   // Fetch label details from API
   useEffect(() => {
@@ -37,7 +39,7 @@ export default function LabelDetail() {
         setLoading(true);
         setError(null);
         const response = await labelAPI.getPrintableLabels(prodNo);
-        
+
         if (response.success) {
           setLabelData(response.data);
           setProdHeader(response.prod_header);
@@ -60,7 +62,7 @@ export default function LabelDetail() {
     if (lotNoFilter.trim() === "") {
       setFilteredLabelData(labelData);
     } else {
-      const filtered = labelData.filter(item => 
+      const filtered = labelData.filter(item =>
         item.lot_no.toLowerCase().includes(lotNoFilter.toLowerCase())
       );
       setFilteredLabelData(filtered);
@@ -85,7 +87,7 @@ export default function LabelDetail() {
     }
   };
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
     if (selectedLabels.size === 0) {
       alert('Please select at least one label to print');
       return;
@@ -94,8 +96,16 @@ export default function LabelDetail() {
     // Get only selected labels
     const selectedData = labelData.filter(item => selectedLabels.has(item.label_id));
 
-    // Directly open PDF in new tab
-    openPDFInNewTab(selectedData, prodHeader as any);
+    // Show loading overlay
+    setIsPrintingPDF(true);
+
+    try {
+      // Directly open PDF in new tab
+      await openPDFInNewTab(selectedData, prodHeader as any);
+    } finally {
+      // Hide loading overlay after PDF is generated
+      setIsPrintingPDF(false);
+    }
   };
 
   const handleBackToList = () => {
@@ -108,6 +118,18 @@ export default function LabelDetail() {
 
   return (
     <div className="p-4 md:p-6 2xl:p-10">
+      {/* PDF Rendering Loading Overlay */}
+      {isPrintingPDF && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-gray-900">
+          <div className="flex flex-col items-center gap-6">
+            <SpinnerOne />
+            <p className="text-xl font-regular text-gray-800 dark:text-white">
+              Rendering PDF, please wait...
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header with back button */}
       <div className="mb-6 flex items-center gap-4">
         <button
@@ -126,7 +148,7 @@ export default function LabelDetail() {
         </h2>
         {prodHeader && (
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Prod No: <span className="font-medium">{prodHeader.prod_no}</span> | 
+            Prod No: <span className="font-medium">{prodHeader.prod_no}</span> |
             Prod Index: <span className="font-medium">{prodHeader.prod_index}</span>
           </p>
         )}
@@ -140,7 +162,7 @@ export default function LabelDetail() {
               Available Labels ({filteredLabelData.length}{lotNoFilter && ` of ${labelData.length}`})
             </h3>
           </div>
-          
+
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             {/* Search by Lot No */}
             <div className="relative">
@@ -171,10 +193,10 @@ export default function LabelDetail() {
                   {selectedLabels.size} selected
                 </span>
               )}
-              <Button 
-                variant="primary" 
-                size="sm" 
-                onClick={handlePrint} 
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handlePrint}
                 disabled={loading || selectedLabels.size === 0}
               >
                 <Printer size='16px' />
@@ -205,9 +227,9 @@ export default function LabelDetail() {
                 <TableRow>
                   <TableCell isHeader className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]">
                     <div className="flex items-center gap-3">
-                      <Checkbox 
-                        checked={selectedLabels.size === filteredLabelData.length && filteredLabelData.length > 0} 
-                        onChange={handleSelectAll} 
+                      <Checkbox
+                        checked={selectedLabels.size === filteredLabelData.length && filteredLabelData.length > 0}
+                        onChange={handleSelectAll}
                       />
                       <span className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Lot No</span>
                     </div>
@@ -231,9 +253,9 @@ export default function LabelDetail() {
                   <TableRow key={item.label_id}>
                     <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <Checkbox 
-                          checked={selectedLabels.has(item.label_id)} 
-                          onChange={() => handleLabelSelect(item.label_id)} 
+                        <Checkbox
+                          checked={selectedLabels.has(item.label_id)}
+                          onChange={() => handleLabelSelect(item.label_id)}
                         />
                         <span className="font-normal text-gray-800 text-theme-sm dark:text-white/90">{item.lot_no}</span>
                       </div>
