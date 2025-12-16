@@ -102,6 +102,28 @@ export default function LabelDetail() {
     try {
       // Directly open PDF in new tab
       await openPDFInNewTab(selectedData, prodHeader as any);
+
+      // Mark labels as printed
+      const selectedLabelIds = Array.from(selectedLabels);
+      try {
+        await labelAPI.markPrinted(selectedLabelIds);
+        console.log('Labels marked as printed:', selectedLabelIds);
+
+        // Clear selected labels
+        setSelectedLabels(new Set());
+
+        // Refresh label data from API
+        if (prodNo) {
+          const response = await labelAPI.getPrintableLabels(prodNo);
+          if (response.success) {
+            setLabelData(response.data);
+            setProdHeader(response.prod_header);
+          }
+        }
+      } catch (error) {
+        console.error('Error marking labels as printed:', error);
+        // Don't stop the flow if this fails, just log the error
+      }
     } finally {
       // Hide loading overlay after PDF is generated
       setIsPrintingPDF(false);

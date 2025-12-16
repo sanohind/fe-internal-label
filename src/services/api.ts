@@ -125,4 +125,12 @@ export const labelAPI = {
     const response = await fetchAPI<any>(`/api/labels/printable?prod_no=${prodNo}`);
     return response as PrintableLabelsResponse;
   },
+
+  // Mark labels as printed
+  markPrinted: async (labelIds: number[]): Promise<ApiResponse<any>> => {
+    return fetchAPI<any>('/api/labels/mark-printed', {
+      method: 'POST',
+      body: JSON.stringify({ label_ids: labelIds }),
+    });
+  },
 };
