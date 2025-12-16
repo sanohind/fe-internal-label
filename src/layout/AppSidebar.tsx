@@ -3,24 +3,10 @@ import { Link, useLocation } from "react-router";
 
 // Assume these icons are imported from an icon library
 import {
-  BoxCubeIcon,
-  CalenderIcon,
-  ChatIcon,
   ChevronDownIcon,
-  DocsIcon,
-  GridIcon,
   HorizontaLDots,
-  ListIcon,
-  MailIcon,
-  PageIcon,
-  PieChartIcon,
-  PlugInIcon,
-  TableIcon,
-  TaskIcon,
-  UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context";
-import SidebarWidget from "./SidebarWidget";
 import { NotebookText } from "lucide-react"
 
 type NavItem = {
