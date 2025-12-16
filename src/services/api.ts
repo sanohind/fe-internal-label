@@ -89,6 +89,13 @@ export async function fetchAPI<T>(
     clearTimeout(timeoutId);
 
     if (!response.ok) {
+      // Check for 401 Unauthorized
+      if (response.status === 401) {
+        // Dispatch custom event to trigger logout
+        window.dispatchEvent(new CustomEvent('unauthorized'));
+        throw new Error('Unauthorized - Session expired or invalid');
+      }
+
       const errorText = await response.text();
       throw new Error(
         `HTTP ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ''}`

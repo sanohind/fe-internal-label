@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 
 interface AuthContextType {
@@ -23,6 +23,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
+  // Define logout with useCallback to avoid dependency issues
+  const logout = useCallback(() => {
+    // Clear localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    
+    // Clear state
+    setUser(null);
+    setIsAuthenticated(false);
+    
+    // Navigate to signin
+    navigate('/signin');
+  }, [navigate]);
+
   // Check for existing session on mount
   useEffect(() => {
     const checkAuth = () => {
@@ -46,6 +60,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     checkAuth();
   }, []);
+
+  // Listen for unauthorized events (401 errors)
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      console.log('Unauthorized access detected - logging out...');
+      logout();
+    };
+
+    window.addEventListener('unauthorized', handleUnauthorized);
+
+    return () => {
+      window.removeEventListener('unauthorized', handleUnauthorized);
+    };
+  }, [logout]);
 
   const login = async (username: string, password: string) => {
     try {
@@ -82,19 +110,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       throw error;
     }
-  };
-
-  const logout = () => {
-    // Clear localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    
-    // Clear state
-    setUser(null);
-    setIsAuthenticated(false);
-    
-    // Navigate to signin
-    navigate('/signin');
   };
 
   return (
