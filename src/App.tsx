@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
-import Ecommerce from "./pages/Dashboard/Ecommerce";
 import Stocks from "./pages/Dashboard/Stocks";
 import Crm from "./pages/Dashboard/Crm";
 import Marketing from "./pages/Dashboard/Marketing";
@@ -59,97 +58,148 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import TaskList from "./pages/Task/TaskList";
 import Saas from "./pages/Dashboard/Saas";
+import LabelList from "./pages/LabelList/LabelList";
+import LabelDetail from "./pages/LabelDetail/LabelDetail";
+import PrintLabel from "./pages/Print/PrintLabel";
+import { AuthProvider } from "./context";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
   return (
     <>
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          loading: {
+            iconTheme: {
+              primary: '#3b82f6',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       <Router>
-        <ScrollToTop />
-        <Routes>
-          {/* Dashboard Layout */}
-          <Route element={<AppLayout />}>
-            <Route index path="/" element={<Ecommerce />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/marketing" element={<Marketing />} />
-            <Route path="/crm" element={<Crm />} />
-            <Route path="/stocks" element={<Stocks />} />
-            <Route path="/saas" element={<Saas />} />
+        <AuthProvider>
+          <ScrollToTop />
+          <Routes>
+            {/* Dashboard Layout - Protected */}
+            <Route element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }>
+              <Route index path="/" element={<LabelList />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/marketing" element={<Marketing />} />
+              <Route path="/crm" element={<Crm />} />
+              <Route path="/stocks" element={<Stocks />} />
+              <Route path="/saas" element={<Saas />} />
 
-            {/* Others Page */}
-            <Route path="/profile" element={<UserProfiles />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/invoice" element={<Invoices />} />
-            <Route path="/faq" element={<Faqs />} />
-            <Route path="/pricing-tables" element={<PricingTables />} />
-            <Route path="/blank" element={<Blank />} />
+              <Route path="/label-list" element={<LabelList />} />
+              <Route path="/label-detail/:prodNo" element={<LabelDetail />} />
 
-            {/* Forms */}
-            <Route path="/form-elements" element={<FormElements />} />
-            <Route path="/form-layout" element={<FormLayout />} />
+              {/* Others Page */}
+              <Route path="/profile" element={<UserProfiles />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/invoice" element={<Invoices />} />
+              <Route path="/faq" element={<Faqs />} />
+              <Route path="/pricing-tables" element={<PricingTables />} />
+              <Route path="/blank" element={<Blank />} />
 
-            {/* Applications */}
-            <Route path="/chat" element={<Chats />} />
+              {/* Forms */}
+              <Route path="/form-elements" element={<FormElements />} />
+              <Route path="/form-layout" element={<FormLayout />} />
 
-            <Route path="/task-list" element={<TaskList />} />
-            <Route path="/task-kanban" element={<TaskKanban />} />
-            <Route path="/file-manager" element={<FileManager />} />
+              {/* Applications */}
+              <Route path="/chat" element={<Chats />} />
 
-            {/* Email */}
+              <Route path="/task-list" element={<TaskList />} />
+              <Route path="/task-kanban" element={<TaskKanban />} />
+              <Route path="/file-manager" element={<FileManager />} />
 
-            <Route path="/inbox" element={<EmailInbox />} />
-            <Route path="/inbox-details" element={<EmailDetails />} />
+              {/* Email */}
 
-            {/* Tables */}
-            <Route path="/basic-tables" element={<BasicTables />} />
-            <Route path="/data-tables" element={<DataTables />} />
+              <Route path="/inbox" element={<EmailInbox />} />
+              <Route path="/inbox-details" element={<EmailDetails />} />
 
-            {/* Ui Elements */}
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="/avatars" element={<Avatars />} />
-            <Route path="/badge" element={<Badges />} />
-            <Route path="/breadcrumb" element={<BreadCrumb />} />
-            <Route path="/buttons" element={<Buttons />} />
-            <Route path="/buttons-group" element={<ButtonsGroup />} />
-            <Route path="/cards" element={<Cards />} />
-            <Route path="/carousel" element={<Carousel />} />
-            <Route path="/dropdowns" element={<Dropdowns />} />
-            <Route path="/images" element={<Images />} />
-            <Route path="/links" element={<Links />} />
-            <Route path="/list" element={<Lists />} />
-            <Route path="/modals" element={<Modals />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/pagination" element={<Pagination />} />
-            <Route path="/popovers" element={<Popovers />} />
-            <Route path="/progress-bar" element={<Progressbar />} />
-            <Route path="/ribbons" element={<Ribbons />} />
-            <Route path="/spinners" element={<Spinners />} />
-            <Route path="/tabs" element={<Tabs />} />
-            <Route path="/tooltips" element={<Tooltips />} />
-            <Route path="/videos" element={<Videos />} />
+              {/* Tables */}
+              <Route path="/basic-tables" element={<BasicTables />} />
+              <Route path="/data-tables" element={<DataTables />} />
 
-            {/* Charts */}
-            <Route path="/line-chart" element={<LineChart />} />
-            <Route path="/bar-chart" element={<BarChart />} />
-            <Route path="/pie-chart" element={<PieChart />} />
-          </Route>
+              {/* Ui Elements */}
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="/avatars" element={<Avatars />} />
+              <Route path="/badge" element={<Badges />} />
+              <Route path="/breadcrumb" element={<BreadCrumb />} />
+              <Route path="/buttons" element={<Buttons />} />
+              <Route path="/buttons-group" element={<ButtonsGroup />} />
+              <Route path="/cards" element={<Cards />} />
+              <Route path="/carousel" element={<Carousel />} />
+              <Route path="/dropdowns" element={<Dropdowns />} />
+              <Route path="/images" element={<Images />} />
+              <Route path="/links" element={<Links />} />
+              <Route path="/list" element={<Lists />} />
+              <Route path="/modals" element={<Modals />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/pagination" element={<Pagination />} />
+              <Route path="/popovers" element={<Popovers />} />
+              <Route path="/progress-bar" element={<Progressbar />} />
+              <Route path="/ribbons" element={<Ribbons />} />
+              <Route path="/spinners" element={<Spinners />} />
+              <Route path="/tabs" element={<Tabs />} />
+              <Route path="/tooltips" element={<Tooltips />} />
+              <Route path="/videos" element={<Videos />} />
 
-          {/* Auth Layout */}
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route
-            path="/two-step-verification"
-            element={<TwoStepVerification />}
-          />
+              {/* Charts */}
+              <Route path="/line-chart" element={<LineChart />} />
+              <Route path="/bar-chart" element={<BarChart />} />
+              <Route path="/pie-chart" element={<PieChart />} />
+            </Route>
 
-          {/* Fallback Route */}
-          <Route path="*" element={<NotFound />} />
-          <Route path="/maintenance" element={<Maintenance />} />
-          <Route path="/success" element={<Success />} />
-          <Route path="/five-zero-zero" element={<FiveZeroZero />} />
-          <Route path="/five-zero-three" element={<FiveZeroThree />} />
-          <Route path="/coming-soon" element={<ComingSoon />} />
-        </Routes>
+            {/* Auth Layout - Public */}
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route
+              path="/two-step-verification"
+              element={<TwoStepVerification />}
+            />
+
+            {/* Print Pages - Protected, No Layout */}
+            <Route path="/print-label" element={
+              <ProtectedRoute>
+                <PrintLabel />
+              </ProtectedRoute>
+            } />
+
+            {/* Fallback Route */}
+            <Route path="*" element={<NotFound />} />
+            <Route path="/maintenance" element={<Maintenance />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/five-zero-zero" element={<FiveZeroZero />} />
+            <Route path="/five-zero-three" element={<FiveZeroThree />} />
+            <Route path="/coming-soon" element={<ComingSoon />} />
+          </Routes>
+        </AuthProvider>
       </Router>
     </>
   );
