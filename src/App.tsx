@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { HashRouter as Router, Routes, Route } from "react-router";
 import Stocks from "./pages/Dashboard/Stocks";
 import Crm from "./pages/Dashboard/Crm";
 import Marketing from "./pages/Dashboard/Marketing";
