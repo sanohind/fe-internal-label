@@ -24,36 +24,46 @@ export default function LabelDetail() {
   const [prodHeader, setProdHeader] = useState<PrintableLabelsResponse['prod_header'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [is404Error, setIs404Error] = useState(false);
   const [isPrintingPDF, setIsPrintingPDF] = useState(false);
 
   // Fetch label details from API
+  const fetchLabelDetails = async () => {
+    if (!prodNo) {
+      setError('Prod No is required');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      setIs404Error(false);
+      const response = await labelAPI.getPrintableLabels(prodNo);
+
+      if (response.success) {
+        setLabelData(response.data);
+        setProdHeader(response.prod_header);
+      } else {
+        setError(response.message || 'Failed to fetch label details');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching label details';
+      
+      // Check if it's a 404 error
+      if (errorMessage.includes('404') || errorMessage.includes('No printable labels found')) {
+        setIs404Error(true);
+        setError('No printable labels found for this Prod no');
+      } else {
+        setError(errorMessage);
+      }
+      console.error('Error fetching label details:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchLabelDetails = async () => {
-      if (!prodNo) {
-        setError('Prod No is required');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await labelAPI.getPrintableLabels(prodNo);
-
-        if (response.success) {
-          setLabelData(response.data);
-          setProdHeader(response.prod_header);
-        } else {
-          setError(response.message || 'Failed to fetch label details');
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred while fetching label details');
-        console.error('Error fetching label details:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchLabelDetails();
   }, [prodNo]);
 
@@ -112,14 +122,8 @@ export default function LabelDetail() {
         // Clear selected labels
         setSelectedLabels(new Set());
 
-        // Refresh label data from API
-        if (prodNo) {
-          const response = await labelAPI.getPrintableLabels(prodNo);
-          if (response.success) {
-            setLabelData(response.data);
-            setProdHeader(response.prod_header);
-          }
-        }
+        // Auto-refresh: Fetch updated label data from backend
+        await fetchLabelDetails();
       } catch (error) {
         console.error('Error marking labels as printed:', error);
         // Don't stop the flow if this fails, just log the error
@@ -234,8 +238,18 @@ export default function LabelDetail() {
               <div className="text-gray-500 dark:text-gray-400">Loading label details...</div>
             </div>
           ) : error ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="text-red-500">Error: {error}</div>
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <div className="text-gray-600 dark:text-gray-400 text-lg font-medium">{error}</div>
+              {is404Error && (
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={handleBackToList}
+                >
+                  <ArrowLeft size={16} />
+                  Back to Prod List
+                </Button>
+              )}
             </div>
           ) : filteredLabelData.length === 0 ? (
             <div className="flex items-center justify-center py-20">
