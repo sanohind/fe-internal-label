@@ -37,6 +37,7 @@ export interface ProdHeader {
 export interface PrintableLabel {
   label_id: number;
   lot_no: string;
+  customer: string;
   model: string;
   unique_no: string;
   part_no: string;

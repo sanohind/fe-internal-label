@@ -88,185 +88,145 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
 }) => {
   return (
     <View style={styles.labelContainer} wrap={false}>
-      {/* ROW 1-3: Company Logo + Header (35pt combined height) */}
-      <View style={[styles.row, { height: ROW_HEIGHT * 3 }]}>
-        {/* Cell A: Company Logo (Col 1-4) */}
+      {/* ROW 1-2: Company Logo + Header */}
+      <View style={[styles.row, { height: ROW_HEIGHT * 2 }]}>
+        {/* Cell A: Company Logo (Col 1-4, Row 1-2) */}
         <View style={[styles.cell, { width: COL_WIDTH * 4, justifyContent: 'center', alignItems: 'center' }]}>
-          <Image src="/images/logo/Sanoh-Mono-06.png" style={{ width: 60, height: 25 }} />
+          <Image src="/images/logo/Sanoh-Mono-06.png" style={{ width: 55, height: 20 }} />
         </View>
         
-        {/* Right section: Model, Job No, Back No, ID TMMIN (Col 5-12) */}
+        {/* Right section: Supplier No, Job No, Back No, ID TMMIN (Col 5-12, Row 1-2) */}
         <View style={{ width: COL_WIDTH * 8, flexDirection: 'column' }}>
-          {/* Header row */}
+          {/* Row 1: Header */}
           <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#000000', height: ROW_HEIGHT }}>
             <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0 }]}>
-              <Text style={styles.boldText}>Model</Text>
+              <Text style={styles.boldText}>Supplier No.</Text>
             </View>
             <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0 }]}>
               <Text style={styles.boldText}>Job No.</Text>
             </View>
-            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0 }]}>
+            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderRightWidth: 0 }]}>
               <Text style={styles.boldText}>Back No.</Text>
             </View>
-            <View style={[styles.lastCell, { width: COL_WIDTH * 2, borderBottomWidth: 0 }]}>
+            <View style={[styles.lastCell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderLeftWidth: 1 }]}>
               <Text style={styles.boldText}>ID TMMIN</Text>
             </View>
           </View>
           
-          {/* Values row */}
-          <View style={{ flexDirection: 'row', height: ROW_HEIGHT * 2 }}>
+          {/* Row 2: Values */}
+          <View style={{ flexDirection: 'row', height: ROW_HEIGHT }}>
             <View style={[styles.cell, { width: COL_WIDTH * 2, justifyContent: 'center' }]}>
-              <Text style={{ fontSize: 8 }}>{item.model || 'D14N'}</Text>
+              <Text style={{ fontSize: 8 }}>{item.customer || ' - '}</Text>
             </View>
             <View style={[styles.cell, { width: COL_WIDTH * 2, justifyContent: 'center' }]}>
-              <Text style={{ fontSize: 8 }}>{prodHeader?.prod_no || 'NT-0173'}</Text>
+              <Text style={{ fontSize: 8 }}>{item.unique_no || ' - '}</Text>
             </View>
-            <View style={[styles.cell, { width: COL_WIDTH * 2, justifyContent: 'center' }]}>
+            <View style={[styles.cell, { width: COL_WIDTH * 2, justifyContent: 'center', borderRightWidth: 0 }]}>
               <Text style={{ fontSize: 8 }}>-</Text>
             </View>
-            <View style={[styles.lastCell, { width: COL_WIDTH * 2, justifyContent: 'center' }]}>
+            <View style={[styles.lastCell, { width: COL_WIDTH * 2, justifyContent: 'center', borderLeftWidth: 1 }]}>
               <Text style={{ fontSize: 8 }}>-</Text>
             </View>
           </View>
         </View>
       </View>
 
-      {/* ROW 4: Part No + QR Headers */}
+      {/* ROW 3: Part No + QR Headers */}
       <View style={[styles.row, { height: ROW_HEIGHT }]}>
         <View style={[styles.cellAlt, { width: COL_WIDTH * 2 }]}>
           <Text style={styles.boldText}>Part No</Text>
         </View>
-        <View style={[styles.cellAlt, { width: COL_WIDTH * 6 }]}>
-          <Text style={{ fontSize: 7, textAlign: 'left' }}>{item.part_no || ''}</Text>
+        <View style={[styles.cellAlt, { width: COL_WIDTH * 5, borderRightWidth: 0 }]}>
+          <Text style={styles.boldText}>{item.part_no || ''}</Text>
         </View>
-        <View style={[styles.cell, { width: COL_WIDTH * 2 }]}>
+        <View style={[styles.cellAlt, { width: COL_WIDTH}]}>
+          <Text style={{ fontSize: 7, textAlign: 'left' }}></Text>
+        </View>
+        <View style={[styles.cell, { width: COL_WIDTH * 2, borderRightWidth: 0 }]}>
           <Text style={[styles.boldText, { fontSize: 5 }]}>QR CODE 1</Text>
         </View>
-        <View style={[styles.lastCell, { width: COL_WIDTH * 2 }]}>
+        <View style={[styles.lastCell, { width: COL_WIDTH * 2, borderLeftWidth: 1 }]}>
           <Text style={[styles.boldText, { fontSize: 5 }]}>QR CODE 2</Text>
         </View>
       </View>
 
-      {/* ROW 5-7: Part Name, Lot No, Date/Shift + QR 1 Image (row 5-8, col 9-10) + print_data text (row 5-7, col 11-12) */}
-      <View style={{ flexDirection: 'row', height: ROW_HEIGHT * 3 }}>
-        {/* Left section: Col 1-8 (Row 5-7) */}
+      {/* ROW 4-11: Combined container to properly handle all merged cells */}
+      <View style={{ flexDirection: 'row', height: ROW_HEIGHT * 8 }}>
+        {/* Left section: Col 1-8 (Row 4-11) */}
         <View style={{ width: COL_WIDTH * 8, flexDirection: 'column' }}>
-          {/* ROW 5: Part Name */}
+          {/* ROW 4: Part Name */}
           <View style={[styles.row, { height: ROW_HEIGHT }]}>
             <View style={[styles.cellAlt, { width: COL_WIDTH * 2, borderBottomWidth: 0 }]}>
               <Text style={styles.boldText}>Part Name</Text>
             </View>
-            <View style={[styles.cellAlt, { width: COL_WIDTH * 6, borderBottomWidth: 0, borderRightWidth: 1 }]}>
-              <Text style={{ fontSize: 7, textAlign: 'left' }}>{item.description || ''}</Text>
+            <View style={[styles.cellAlt, { width: COL_WIDTH * 5, borderBottomWidth: 0, borderRightWidth: 0 }]}>
+              <Text style={styles.boldText}>{item.description || ''}</Text>
+            </View>
+            <View style={[styles.cellAlt, { width: COL_WIDTH, borderBottomWidth: 0, borderRightWidth: 1 }]}>
+              <Text style={{ fontSize: 7, textAlign: 'left' }}></Text>
             </View>
           </View>
 
-          {/* ROW 6: Lot No */}
+          {/* ROW 5: Lot No */}
           <View style={[styles.row, { height: ROW_HEIGHT }]}>
             <View style={[styles.cellAlt, { width: COL_WIDTH * 2, borderBottomWidth: 0 }]}>
               <Text style={styles.boldText}>Lot No</Text>
             </View>
-            <View style={[styles.cellAlt, { width: COL_WIDTH * 6, borderBottomWidth: 0, borderRightWidth: 1 }]}>
-              <Text style={{ fontSize: 7, textAlign: 'left' }}>{item.lot_no || ''}</Text>
+            <View style={[styles.cellAlt, { width: COL_WIDTH * 5, borderBottomWidth: 0, borderRightWidth: 0 }]}>
+              <Text style={styles.boldText}>{item.lot_no || ''} </Text>
+            </View>
+            <View style={[styles.cellAlt, { width: COL_WIDTH, borderBottomWidth: 0, borderRightWidth: 1 }]}>
+              <Text style={{ fontSize: 7, textAlign: 'left' }}></Text>
             </View>
           </View>
 
-          {/* ROW 7: Date/Shift */}
-          <View style={[styles.lastRow, { height: ROW_HEIGHT }]}>
-            <View style={[styles.cellAlt, { width: COL_WIDTH * 2, borderRightWidth: 1 }]}>
-              <Text style={styles.boldText}>Date / Shift</Text>
-            </View>
-            <View style={[styles.cellAlt, { width: COL_WIDTH * 4, borderRightWidth: 1 }]}>
-              <Text style={{ textAlign: 'left', fontSize:7 }}>{item.date || '2025'}</Text>
-            </View>
-            <View style={[styles.cell, { width: COL_WIDTH, borderRightWidth: 1 }]}>
-              <Text style={{ fontSize: 6 }}>D</Text>
-            </View>
-            <View style={[styles.cell, { width: COL_WIDTH, borderRightWidth: 1 }]}>
-              <Text style={{ fontSize: 6 }}>N</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Col 9-10: QR CODE 1 Image (Row 5-7, will extend to row 8) - part 1 */}
-        <View style={[styles.cell, { 
-          width: COL_WIDTH * 2, 
-          borderRightWidth: 1, 
-          borderBottomWidth: 0,
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          paddingTop: 2
-        }]}>
-          {qrCode1 && (
-            <Image src={qrCode1} style={{ width: COL_WIDTH * 1.5, height: ROW_HEIGHT * 2.4 }} />
-          )}
-        </View>
-
-        {/* Col 11-12: print_data text (Row 5-7) */}
-        <View style={[styles.lastCell, { 
-          width: COL_WIDTH * 2, 
-          borderBottomWidth: 0,
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 2
-        }]}>
-          <Text style={{ 
-            fontSize: 5, 
-            textAlign: 'left',
-            maxWidth: COL_WIDTH * 1.9
-          }}>
-            {(() => {
-              const text = item.print_data || '';
-              if (text.length <= 12) return text;
-              
-              const line1 = text.substring(0, 12);
-              const remaining1 = text.substring(12);
-              
-              if (remaining1.length <= 12) {
-                return `${line1}\n${remaining1}`;
-              }
-              
-              const line2 = remaining1.substring(0, 12);
-              const remaining2 = remaining1.substring(12);
-              
-              if (remaining2.length <= 12) {
-                return `${line1}\n${line2}\n${remaining2}`;
-              }
-              
-              const line3 = remaining2.substring(0, 12);
-              const line4 = remaining2.substring(12);
-              return `${line1}\n${line2}\n${line3}\n${line4}`;
-            })()}
-          </Text>
-        </View>
-      </View>
-
-      {/* ROW 8-11: Combined section with Operator Name, Status, Characteristics, QR1 text, and QR2 image */}
-      <View style={{ flexDirection: 'row', height: ROW_HEIGHT * 4, position: 'relative' }}>
-        {/* Left section: Col 1-8 (Row 8-11) */}
-        <View style={{ width: COL_WIDTH * 8, flexDirection: 'column' }}>
-          {/* ROW 8: Operator Name */}
+          {/* ROW 6: Operator Name */}
           <View style={[styles.row, { height: ROW_HEIGHT }]}>
-            <View style={[styles.cellAlt, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderTopWidth: 1, borderTopColor: '#000000' }]}>
+            <View style={[styles.cellAlt, { width: COL_WIDTH * 2, borderBottomWidth: 0 }]}>
               <Text style={styles.boldText}>Operator Name</Text>
             </View>
-            <View style={[styles.cell, { width: COL_WIDTH * 6, borderBottomWidth: 0, borderRightWidth: 1, borderTopWidth: 1, borderTopColor: '#000000' }]}>
-              <Text></Text>
+            <View style={[styles.cellAlt, { width: COL_WIDTH, borderBottomWidth: 0, borderRightWidth: 0 }]}>
+              <Text style={styles.boldText}></Text>
+            </View>
+            <View style={[styles.cellAlt, { width: COL_WIDTH * 3, borderBottomWidth: 0 }]}>
+              <Text style={{ fontSize: 7, textAlign: 'left' }}></Text>
+            </View>
+            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderRightWidth: 1 }]}>
+              <Text style={{ fontSize: 6 }}>{item.model || ''}</Text>
+            </View>
+          </View>
+
+          {/* ROW 7-8: Date/Shift - merged cells */}
+          <View style={[styles.lastRow, { height: ROW_HEIGHT * 2 }]}>
+            <View style={[styles.cellAlt, { width: COL_WIDTH * 2, borderRightWidth: 1, height: ROW_HEIGHT * 2 }]}>
+              <Text style={styles.boldText}>Date / Shift</Text>
+            </View>
+            <View style={[styles.cellAlt, { width: COL_WIDTH, borderRightWidth: 0, height: ROW_HEIGHT * 2 }]}>
+              <Text style={styles.boldText}></Text>
+            </View>
+            <View style={[styles.cellAlt, { width: COL_WIDTH * 3, borderRightWidth: 1, height: ROW_HEIGHT * 2 }]}>
+              <Text style={{ textAlign: 'left', fontSize: 7 }}>{item.date || ''}</Text>
+            </View>
+            <View style={[styles.cell, { width: COL_WIDTH, borderRightWidth: 1, height: ROW_HEIGHT * 2 }]}>
+              <Text style={{ fontSize: 6 }}>D</Text>
+            </View>
+            <View style={[styles.cell, { width: COL_WIDTH, borderRightWidth: 1, height: ROW_HEIGHT * 2 }]}>
+              <Text style={{ fontSize: 6 }}>N</Text>
             </View>
           </View>
 
           {/* ROW 9: Status Headers */}
-          <View style={[styles.row, { height: ROW_HEIGHT }]}>
-            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderTopColor: '#000000' }]}>
+          <View style={[styles.row, { height: ROW_HEIGHT }]}>            
+            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderTopWidth: 1, borderTopColor: '#000000' }]}>
               <Text style={styles.boldText}>Status</Text>
             </View>
-            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderTopColor: '#000000' }]}>
+            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderTopWidth: 1, borderTopColor: '#000000' }]}>
               <Text style={[styles.boldText, { fontSize: 5 }]}>Qty [PCS]</Text>
             </View>
-            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderTopColor: '#000000' }]}>
+            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderTopWidth: 1, borderTopColor: '#000000' }]}>
               <Text style={styles.boldText}>Quality</Text>
             </View>
-            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderTopColor: '#000000' }]}>
+            <View style={[styles.cell, { width: COL_WIDTH * 2, borderBottomWidth: 0, borderRightWidth: 1, borderTopWidth: 1, borderTopColor: '#000000' }]}>
               <Text style={[styles.boldText, { fontSize: 5 }]}>PIC Delivery</Text>
             </View>
           </View>
@@ -288,30 +248,41 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
           </View>
         </View>
 
-        {/* Col 9-10: QR CODE 1 text + Characteristics (Row 8-11) */}
+        {/* Col 9-10: QR CODE 1 (Row 4-7) + Prod_no (Row 8) + Characteristics (Row 9-11) */}
         <View style={{ width: COL_WIDTH * 2, flexDirection: 'column' }}>
-          {/* ROW 8: QR CODE 1 prod_no text */}
+          {/* ROW 4-7: QR CODE 1 - MERGED */}
           <View style={[styles.cell, { 
-            height: ROW_HEIGHT,
+            width: COL_WIDTH * 2,
+            height: ROW_HEIGHT * 4,
             borderRightWidth: 1,
             borderBottomWidth: 1,
-            borderTopWidth: 1,
-            borderTopColor: '#000000',
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingTop: 2
+          }]}>
+            {qrCode1 && (
+              <Image src={qrCode1} style={{ width: COL_WIDTH * 1.4, height: ROW_HEIGHT * 2.4 }} />
+            )}
+          </View>
+
+          {/* ROW 8: Prod_no */}
+          <View style={[styles.cell, { 
+            width: COL_WIDTH * 2,
+            height: ROW_HEIGHT,
+            borderRightWidth: 1,
+            borderBottomWidth: 0,
             justifyContent: 'center',
             alignItems: 'center'
           }]}>
-            {qrCode1 && (
-              <Text style={{ fontSize: 6, textAlign: 'center' }}>{prodHeader?.prod_no || ''}</Text>
-            )}
+            <Text style={{ fontSize: 6, textAlign: 'center' }}>{prodHeader?.prod_no || ''}</Text>
           </View>
 
           {/* ROW 9: Characteristics header */}
           <View style={[styles.cell, { 
             height: ROW_HEIGHT,
-            borderRightWidth: 1,
             borderBottomWidth: 1,
-            borderBottomColor: '#000000',
-            borderTopWidth: 0,
+            borderRightWidth: 0,
+            borderTopWidth: 1,
             borderTopColor: '#000000',
             justifyContent: 'center',
             alignItems: 'center'
@@ -322,31 +293,76 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
           {/* ROW 10-11: Characteristics value */}
           <View style={[styles.cell, { 
             height: ROW_HEIGHT * 2,
-            borderRightWidth: 1,
+            borderRightWidth: 0,
             borderBottomWidth: 0,
-            justifyContent: 'center',
+            justifyContent:'center',
             alignItems: 'center'
           }]}>
             <Text style={{ fontSize: 6 }}></Text>
           </View>
         </View>
 
-        {/* Col 11-12: QR CODE 2 Image (Row 8-11, full 4 rows) */}
-        <View style={[styles.lastCell, { 
-          width: COL_WIDTH * 2, 
-          height: ROW_HEIGHT * 4,
-          borderBottomWidth: 0,
-          borderTopWidth: 1,
-          borderTopColor: '#000000',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 2
-        }]}>
-          {qrCode2 && (
-            <Image src={qrCode2} style={{ width: COL_WIDTH * 1.8, height: ROW_HEIGHT * 2.9 }} />
-          )}
+        {/* Col 11-12: print_data text (Row 4-5) + QR CODE 2 (Row 6-8 partial) */}
+        <View style={{ width: COL_WIDTH * 2, flexDirection: 'column' }}>
+          {/* ROW 4-5: print_data text */}
+          <View style={[styles.lastCell, { 
+            width: COL_WIDTH * 2,
+            height: ROW_HEIGHT * 2,
+            borderBottomWidth: 1,
+            borderLeftWidth: 1,
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            padding: 2,
+            paddingTop: 3
+          }]}>
+            <Text style={{ 
+              fontSize: 5, 
+              textAlign: 'left',
+              maxWidth: COL_WIDTH * 1.9
+            }}>
+              {(() => {
+                const text = item.print_data || '';
+                if (text.length <= 12) return text;
+                
+                const line1 = text.substring(0, 12);
+                const remaining1 = text.substring(12);
+                
+                if (remaining1.length <= 12) {
+                  return `${line1}\n${remaining1}`;
+                }
+                
+                const line2 = remaining1.substring(0, 12);
+                const remaining2 = remaining1.substring(12);
+                
+                if (remaining2.length <= 12) {
+                  return `${line1}\n${line2}\n${remaining2}`;
+                }
+                
+                const line3 = remaining2.substring(0, 12);
+                const line4 = remaining2.substring(12, 24);
+                return `${line1}\n${line2}\n${line3}\n${line4}`;
+              })()}
+            </Text>
+          </View>
+
+          {/* ROW 6-11: QR CODE 2 - MERGED (spanning 6 rows) */}
+          <View style={[styles.lastCell, { 
+            width: COL_WIDTH * 2,
+            height: ROW_HEIGHT * 6,
+            borderBottomWidth: 0,
+            borderLeftWidth: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 2
+          }]}>
+            {qrCode2 && (
+              <Image src={qrCode2} style={{ width: COL_WIDTH * 1.8, height: ROW_HEIGHT * 2.8 }} />
+            )}
+          </View>
         </View>
       </View>
+
+
     </View>
   );
 };
