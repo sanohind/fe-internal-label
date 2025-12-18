@@ -116,7 +116,7 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
           {/* Row 2: Values */}
           <View style={{ flexDirection: 'row', height: ROW_HEIGHT }}>
             <View style={[styles.cell, { width: COL_WIDTH * 2, justifyContent: 'center' }]}>
-              <Text style={{ fontSize: 8 }}>{item.customer || ' - '}</Text>
+              <Text style={{ fontSize: 8 }}>3000474</Text>
             </View>
             <View style={[styles.cell, { width: COL_WIDTH * 2, justifyContent: 'center' }]}>
               <Text style={{ fontSize: 8 }}>{item.unique_no || ' - '}</Text>
@@ -137,7 +137,7 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
           <Text style={styles.boldText}>Part No</Text>
         </View>
         <View style={[styles.cellAlt, { width: COL_WIDTH * 5, borderRightWidth: 0 }]}>
-          <Text style={styles.boldText}>{item.part_no || ''}</Text>
+          <Text style={[styles.boldText, {fontSize: 8}]}>{item.part_no || ''}</Text>
         </View>
         <View style={[styles.cellAlt, { width: COL_WIDTH}]}>
           <Text style={{ fontSize: 7, textAlign: 'left' }}></Text>
@@ -160,7 +160,7 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
               <Text style={styles.boldText}>Part Name</Text>
             </View>
             <View style={[styles.cellAlt, { width: COL_WIDTH * 5, borderBottomWidth: 0, borderRightWidth: 0 }]}>
-              <Text style={styles.boldText}>{item.description || ''}</Text>
+              <Text style={[styles.boldText, {fontSize: 8}]}>{item.description || ''}</Text>
             </View>
             <View style={[styles.cellAlt, { width: COL_WIDTH, borderBottomWidth: 0, borderRightWidth: 1 }]}>
               <Text style={{ fontSize: 7, textAlign: 'left' }}></Text>
@@ -173,7 +173,7 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
               <Text style={styles.boldText}>Lot No</Text>
             </View>
             <View style={[styles.cellAlt, { width: COL_WIDTH * 5, borderBottomWidth: 0, borderRightWidth: 0 }]}>
-              <Text style={styles.boldText}>{item.lot_no || ''} </Text>
+              <Text style={[styles.boldText, {fontSize: 8}]}>{item.lot_no || ''} </Text>
             </View>
             <View style={[styles.cellAlt, { width: COL_WIDTH, borderBottomWidth: 0, borderRightWidth: 1 }]}>
               <Text style={{ fontSize: 7, textAlign: 'left' }}></Text>
@@ -261,7 +261,7 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
             paddingTop: 2
           }]}>
             {qrCode1 && (
-              <Image src={qrCode1} style={{ width: COL_WIDTH * 1.4, height: ROW_HEIGHT * 2.4 }} />
+              <Image src={qrCode1} style={{ width: COL_WIDTH * 1.2, height: ROW_HEIGHT * 2.1 }} />
             )}
           </View>
 
