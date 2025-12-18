@@ -10,20 +10,23 @@ export default function LabelList() {
   const handleSync = async () => {
     try {
       setIsSyncing(true);
-      toast.loading("Syncing prod labels...", { id: "sync-labels" });
-      
+      toast.loading("Triggering sync job...", { id: "sync-labels" });
+
       const response = await labelAPI.syncProdLabel();
-      
+
       if (response.success) {
-        toast.success(response.message || "Sync completed successfully!", { id: "sync-labels" });
-        // Reload the page to fetch updated data
-        window.location.reload();
+        toast.success(
+          response.message || "Sync job has been started! The process will run in the background (~5 minutes).",
+          { id: "sync-labels", duration: 6000 }
+        );
+        // Don't reload immediately since sync runs in background
+        // User can manually refresh after a few minutes
       } else {
-        toast.error(response.message || "Sync failed", { id: "sync-labels" });
+        toast.error(response.message || "Failed to start sync job", { id: "sync-labels" });
       }
     } catch (error) {
       console.error("Sync error:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to sync", { id: "sync-labels" });
+      toast.error(error instanceof Error ? error.message : "Failed to trigger sync", { id: "sync-labels" });
     } finally {
       setIsSyncing(false);
     }
@@ -45,17 +48,17 @@ export default function LabelList() {
             disabled={isSyncing}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors bg-brand-500 rounded-lg hover:bg-brand-600 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg 
+            <svg
               className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`}
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
               />
             </svg>
             {isSyncing ? "Syncing..." : "Sync Prod Label"}

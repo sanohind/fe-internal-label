@@ -72,10 +72,10 @@ export async function fetchAPI<T>(
 
   try {
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     // Get token from localStorage
     const token = localStorage.getItem('token');
-    
+
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
@@ -108,7 +108,7 @@ export async function fetchAPI<T>(
     return data;
   } catch (error) {
     clearTimeout(timeoutId);
-    
+
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
         const timeoutSeconds = Math.floor((options?.timeout || 30000) / 1000);
@@ -117,7 +117,7 @@ export async function fetchAPI<T>(
       console.error('API fetch error:', error);
       throw error;
     }
-    
+
     throw new Error('Terjadi kesalahan yang tidak diketahui');
   }
 }
@@ -144,10 +144,10 @@ export const labelAPI = {
     });
   },
 
-  // Manually sync prod labels (with extended timeout for long-running operation)
+  // Manually sync prod labels (via queue job - returns immediately)
   syncProdLabel: async (): Promise<ApiResponse<any>> => {
-    return fetchAPI<any>('/api/sync/prod-label', {
-      timeout: 900000, // 15 minutes timeout for sync operation
+    return fetchAPI<any>('/api/sync/manual', {
+      method: 'POST',
     });
   },
 };
