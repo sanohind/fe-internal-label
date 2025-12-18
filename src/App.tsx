@@ -70,6 +70,9 @@ export default function App() {
     <>
       <Toaster 
         position="top-right"
+        containerStyle={{
+          top: 80,
+        }}
         toastOptions={{
           duration: 3000,
           style: {

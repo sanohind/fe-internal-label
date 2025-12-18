@@ -64,10 +64,11 @@ export interface PrintableLabelsResponse {
 // Fetch function with error handling and timeout
 export async function fetchAPI<T>(
   endpoint: string,
-  options?: RequestInit
+  options?: RequestInit & { timeout?: number }
 ): Promise<ApiResponse<T>> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+  const timeoutDuration = options?.timeout || 30000; // Default 30 seconds, or custom timeout
+  const timeoutId = setTimeout(() => controller.abort(), timeoutDuration);
 
   try {
     const url = `${API_BASE_URL}${endpoint}`;
@@ -110,7 +111,8 @@ export async function fetchAPI<T>(
     
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        throw new Error('Request timeout - Server tidak merespons dalam 30 detik');
+        const timeoutSeconds = Math.floor((options?.timeout || 30000) / 1000);
+        throw new Error(`Request timeout - Server tidak merespons dalam ${timeoutSeconds} detik`);
       }
       console.error('API fetch error:', error);
       throw error;
@@ -139,6 +141,13 @@ export const labelAPI = {
     return fetchAPI<any>('/api/labels/mark-printed', {
       method: 'POST',
       body: JSON.stringify({ label_ids: labelIds }),
+    });
+  },
+
+  // Manually sync prod labels (with extended timeout for long-running operation)
+  syncProdLabel: async (): Promise<ApiResponse<any>> => {
+    return fetchAPI<any>('/api/sync/prod-label', {
+      timeout: 900000, // 15 minutes timeout for sync operation
     });
   },
 };

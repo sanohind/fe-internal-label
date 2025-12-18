@@ -62,7 +62,8 @@ export default function DataTableThree() {
       setFilteredData(tableRowData);
     } else {
       const filtered = tableRowData.filter(item =>
-        item.prod_no.toLowerCase().includes(prodNoFilter.toLowerCase())
+        item.prod_no.toLowerCase().includes(prodNoFilter.toLowerCase()) ||
+        item.item.toLowerCase().includes(prodNoFilter.toLowerCase())
       );
       setFilteredData(filtered);
     }
@@ -180,8 +181,8 @@ export default function DataTableThree() {
               type="text"
               value={prodNoFilter}
               onChange={handleSearchInputChange}
-              placeholder="Search by Prod No..."
-              className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-11 pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[300px]"
+              placeholder="Search..."
+              className="dark:bg-dark-900 h-11 w-[200px] rounded-lg border border-gray-300 bg-transparent py-2.5 pl-11 pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[250px]"
             />
           </div>
         </div>
