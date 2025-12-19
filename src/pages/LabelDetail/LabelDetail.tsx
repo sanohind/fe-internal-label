@@ -86,7 +86,7 @@ export default function LabelDetail() {
 
     // Apply prod no filter
     if (columnFilters.prodNo.trim() !== "") {
-      filtered = filtered.filter(item =>
+      filtered = filtered.filter(_item =>
         (prodHeader?.prod_no || "").toLowerCase().includes(columnFilters.prodNo.toLowerCase())
       );
     }
