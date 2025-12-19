@@ -22,6 +22,10 @@ export interface ProdHeader {
   model: string;
   unique_no: string;
   sanoh_code: string;
+  back_no: string;
+  common_id: string;
+  karakteristik: string;
+  color_code: string;
   snp: number;
   sts: number;
   status: string;
@@ -46,6 +50,9 @@ export interface PrintableLabel {
   qty: number;
   lot_date: string;
   lot_qty: number;
+  back_no: string;
+  tmmin_id: string;
+  karakteristik: string;
   print_data: string;
 }
 

@@ -10,6 +10,18 @@ import {
 import Pagination from "./Pagination";
 import { labelAPI, ProdHeader } from "../../services/api";
 
+// Helper function to convert color code aliases to full names
+const getColorName = (colorCode: string): string => {
+  const colorMap: { [key: string]: string } = {
+    'WHT': 'WHITE',
+    'BLU': 'BLUE',
+    'GRN': 'GREEN',
+    'RED': 'RED',
+    'YEL': 'YELLOW',
+  };
+  return colorMap[colorCode.toUpperCase()] || colorCode;
+};
+
 
 export default function DataTableThree() {
   const navigate = useNavigate();
@@ -19,29 +31,27 @@ export default function DataTableThree() {
   const [filteredData, setFilteredData] = useState<ProdHeader[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [prodNoFilter, setProdNoFilter] = useState<string>("");
-  const [prodIndexFilter, setProdIndexFilter] = useState<string>("");
-  const [availableProdIndexes, setAvailableProdIndexes] = useState<string[]>([]);
+  const [columnFilters, setColumnFilters] = useState({
+    prodIndex: "",
+    prodNo: "",
+    partNo: "",
+    partName: "",
+    customer: "",
+    qtyOrder: "",
+    colorCode: "",
+  });
 
-  // Fetch data from API with prod_index filter
+  // Fetch data from API
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await labelAPI.getProdHeaders(prodIndexFilter || undefined);
+        const response = await labelAPI.getProdHeaders(undefined);
 
         if (response.success) {
           setTableRowData(response.data);
           setFilteredData(response.data);
-
-          // Extract unique prod_index values for the filter dropdown
-          if (!prodIndexFilter) {
-            const uniqueIndexes = Array.from(
-              new Set(response.data.map(item => item.prod_index))
-            ).sort((a, b) => b.localeCompare(a)); // Sort descending (newest first)
-            setAvailableProdIndexes(uniqueIndexes);
-          }
         } else {
           setError(response.message || 'Failed to fetch data');
         }
@@ -54,21 +64,68 @@ export default function DataTableThree() {
     };
 
     fetchData();
-  }, [prodIndexFilter]);
+  }, []);
 
-  // Filter data when search term changes
+  // Filter data when any column filter changes
   useEffect(() => {
-    if (prodNoFilter.trim() === "") {
-      setFilteredData(tableRowData);
-    } else {
-      const filtered = tableRowData.filter(item =>
-        item.prod_no.toLowerCase().includes(prodNoFilter.toLowerCase()) ||
-        item.item.toLowerCase().includes(prodNoFilter.toLowerCase())
+    let filtered = [...tableRowData];
+
+    // Apply prod index filter
+    if (columnFilters.prodIndex.trim() !== "") {
+      filtered = filtered.filter(item =>
+        item.prod_index.toLowerCase().includes(columnFilters.prodIndex.toLowerCase())
       );
-      setFilteredData(filtered);
     }
+
+    // Apply prod no filter
+    if (columnFilters.prodNo.trim() !== "") {
+      filtered = filtered.filter(item =>
+        item.prod_no.toLowerCase().includes(columnFilters.prodNo.toLowerCase())
+      );
+    }
+
+    // Apply part no filter
+    if (columnFilters.partNo.trim() !== "") {
+      filtered = filtered.filter(item =>
+        item.item.toLowerCase().includes(columnFilters.partNo.toLowerCase())
+      );
+    }
+
+    // Apply part name filter
+    if (columnFilters.partName.trim() !== "") {
+      filtered = filtered.filter(item =>
+        (item.mat_desc || item.description || "").toLowerCase().includes(columnFilters.partName.toLowerCase())
+      );
+    }
+
+    // Apply customer filter
+    if (columnFilters.customer.trim() !== "") {
+      filtered = filtered.filter(item =>
+        item.customer.toLowerCase().includes(columnFilters.customer.toLowerCase())
+      );
+    }
+
+    // Apply qty order filter
+    if (columnFilters.qtyOrder.trim() !== "") {
+      filtered = filtered.filter(item =>
+        item.qty_order.toString().includes(columnFilters.qtyOrder)
+      );
+    }
+
+    // Apply color code filter
+    if (columnFilters.colorCode.trim() !== "") {
+      filtered = filtered.filter(item => {
+        const colorCode = item.color_code || "";
+        const colorName = getColorName(colorCode);
+        const searchTerm = columnFilters.colorCode.toLowerCase();
+        return colorCode.toLowerCase().includes(searchTerm) || 
+               colorName.toLowerCase().includes(searchTerm);
+      });
+    }
+
+    setFilteredData(filtered);
     setCurrentPage(1); // Reset to first page when filtering
-  }, [prodNoFilter, tableRowData]);
+  }, [columnFilters, tableRowData]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
@@ -85,20 +142,17 @@ export default function DataTableThree() {
     }
   };
 
-  // Rows per page handler
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     const newRowsPerPage = parseInt(e.target.value, 10);
     setRowsPerPage(newRowsPerPage);
     setCurrentPage(1);
   };
 
-  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProdNoFilter(e.target.value);
-  };
-
-  const handleProdIndexFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setProdIndexFilter(e.target.value);
-    setCurrentPage(1);
+  const handleColumnFilterChange = (column: keyof typeof columnFilters, value: string) => {
+    setColumnFilters(prev => ({
+      ...prev,
+      [column]: value
+    }));
   };
 
   // Navigate to label detail page
@@ -139,53 +193,6 @@ export default function DataTableThree() {
           </div>
           <span className="text-gray-500 dark:text-gray-400"> entries </span>
         </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          {/* Prod Index Filter Dropdown */}
-          <div className="relative z-20 bg-transparent">
-            <select
-              className="w-full py-2 pl-3 pr-8 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-11 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[80px]"
-              value={prodIndexFilter}
-              onChange={handleProdIndexFilterChange}
-            >
-              <option value="" className="text-gray-500 dark:bg-gray-900 dark:text-gray-400">
-                All
-              </option>
-              {availableProdIndexes.map((index) => (
-                <option key={index} value={index} className="text-gray-500 dark:bg-gray-900 dark:text-gray-400">
-                  {index}
-                </option>
-              ))}
-            </select>
-            <span className="absolute z-30 text-gray-500 -translate-y-1/2 right-2 top-1/2 dark:text-gray-400">
-              <svg className="stroke-current" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3.8335 5.9165L8.00016 10.0832L12.1668 5.9165" stroke="" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-          </div>
-
-          {/* Search Input */}
-          <div className="relative">
-            <button className="absolute text-gray-500 -translate-y-1/2 left-4 top-1/2 dark:text-gray-400">
-              <svg className="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M3.04199 9.37363C3.04199 5.87693 5.87735 3.04199 9.37533 3.04199C12.8733 3.04199 15.7087 5.87693 15.7087 9.37363C15.7087 12.8703 12.8733 15.7053 9.37533 15.7053C5.87735 15.7053 3.04199 12.8703 3.04199 9.37363ZM9.37533 1.54199C5.04926 1.54199 1.54199 5.04817 1.54199 9.37363C1.54199 13.6991 5.04926 17.2053 9.37533 17.2053C11.2676 17.2053 13.0032 16.5344 14.3572 15.4176L17.1773 18.238C17.4702 18.5309 17.945 18.5309 18.2379 18.238C18.5308 17.9451 18.5309 17.4703 18.238 17.1773L15.4182 14.3573C16.5367 13.0033 17.2087 11.2669 17.2087 9.37363C17.2087 5.04817 13.7014 1.54199 9.37533 1.54199Z"
-                  fill=""
-                />
-              </svg>
-            </button>
-
-            <input
-              type="text"
-              value={prodNoFilter}
-              onChange={handleSearchInputChange}
-              placeholder="Search..."
-              className="dark:bg-dark-900 h-11 w-[200px] rounded-lg border border-gray-300 bg-transparent py-2.5 pl-11 pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[250px]"
-            />
-          </div>
-        </div>
       </div>
 
       <div className="max-w-full overflow-x-auto custom-scrollbar">
@@ -203,22 +210,86 @@ export default function DataTableThree() {
               <TableHeader>
                 <TableRow>
                   <TableCell isHeader className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]">
-                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Prod Index</p>
+                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400 mb-2">Prod Index</p>
+                    <input
+                      type="text"
+                      value={columnFilters.prodIndex}
+                      onChange={(e) => handleColumnFilterChange('prodIndex', e.target.value)}
+                      placeholder="Filter..."
+                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:border-brand-300 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
+                    />
                   </TableCell>
                   <TableCell isHeader className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]">
-                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Prod No</p>
+                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400 mb-2">Prod No</p>
+                    <input
+                      type="text"
+                      value={columnFilters.prodNo}
+                      onChange={(e) => handleColumnFilterChange('prodNo', e.target.value)}
+                      placeholder="Filter..."
+                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:border-brand-300 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
+                    />
                   </TableCell>
                   <TableCell isHeader className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]">
-                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Part No</p>
+                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400 mb-2">Part No</p>
+                    <input
+                      type="text"
+                      value={columnFilters.partNo}
+                      onChange={(e) => handleColumnFilterChange('partNo', e.target.value)}
+                      placeholder="Filter..."
+                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:border-brand-300 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
+                    />
                   </TableCell>
                   <TableCell isHeader className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]">
-                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Part Name</p>
+                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400 mb-2">Part Name</p>
+                    <input
+                      type="text"
+                      value={columnFilters.partName}
+                      onChange={(e) => handleColumnFilterChange('partName', e.target.value)}
+                      placeholder="Filter..."
+                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:border-brand-300 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
+                    />
                   </TableCell>
                   <TableCell isHeader className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]">
-                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Customer</p>
+                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400 mb-2">Customer</p>
+                    <input
+                      type="text"
+                      value={columnFilters.customer}
+                      onChange={(e) => handleColumnFilterChange('customer', e.target.value)}
+                      placeholder="Filter..."
+                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:border-brand-300 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
+                    />
                   </TableCell>
                   <TableCell isHeader className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]">
-                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">Qty Order</p>
+                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400 mb-2">Qty Order</p>
+                    <input
+                      type="text"
+                      value={columnFilters.qtyOrder}
+                      onChange={(e) => handleColumnFilterChange('qtyOrder', e.target.value)}
+                      placeholder="Filter..."
+                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:border-brand-300 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
+                    />
+                  </TableCell>
+                  <TableCell isHeader className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]">
+                    <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400 mb-2">Color Code</p>
+                    <div className="relative">
+                      <select
+                        value={columnFilters.colorCode}
+                        onChange={(e) => handleColumnFilterChange('colorCode', e.target.value)}
+                        className="w-full py-1 pl-2 pr-10 text-xs text-gray-800 bg-transparent border border-gray-300 rounded appearance-none focus:border-brand-300 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
+                      >
+                        <option value="" className="dark:bg-gray-900">All</option>
+                        <option value="WHITE" className="dark:bg-gray-900">WHITE</option>
+                        <option value="BLUE" className="dark:bg-gray-900">BLUE</option>
+                        <option value="GREEN" className="dark:bg-gray-900">GREEN</option>
+                        <option value="RED" className="dark:bg-gray-900">RED</option>
+                        <option value="YELLOW" className="dark:bg-gray-900">YELLOW</option>
+                      </select>
+                      <span className="absolute z-30 text-gray-500 -translate-y-1/2 right-1 top-1/2 dark:text-gray-400 pointer-events-none">
+                        <svg className="stroke-current" width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M3.8335 5.9165L8.00016 10.0832L12.1668 5.9165" stroke="" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
+                    </div>
                   </TableCell>
                 </TableRow>
               </TableHeader>
@@ -247,6 +318,9 @@ export default function DataTableThree() {
                     </TableCell>
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
                       {item.qty_order}
+                    </TableCell>
+                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                      {item.color_code ? getColorName(item.color_code) : '-'}
                     </TableCell>
                   </TableRow>
                 ))}

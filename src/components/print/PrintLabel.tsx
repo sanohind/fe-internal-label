@@ -122,10 +122,10 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
               <Text style={{ fontSize: 8 }}>{item.unique_no || ' - '}</Text>
             </View>
             <View style={[styles.cell, { width: COL_WIDTH * 2, justifyContent: 'center', borderRightWidth: 0 }]}>
-              <Text style={{ fontSize: 8 }}>-</Text>
+              <Text style={{ fontSize: 8 }}>{item.back_no || '-'}</Text>
             </View>
             <View style={[styles.lastCell, { width: COL_WIDTH * 2, justifyContent: 'center', borderLeftWidth: 1 }]}>
-              <Text style={{ fontSize: 8 }}>-</Text>
+              <Text style={{ fontSize: 8 }}>{item.tmmin_id || '-'}</Text>
             </View>
           </View>
         </View>
@@ -298,7 +298,7 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
             justifyContent:'center',
             alignItems: 'center'
           }]}>
-            <Text style={{ fontSize: 6 }}></Text>
+            <Text style={{ fontSize: 6 }}>{item.karakteristik || ''}</Text>
           </View>
         </View>
 
