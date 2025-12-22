@@ -20,13 +20,40 @@ export default function LabelDetail() {
   const [selectedLabels, setSelectedLabels] = useState<Set<number>>(new Set());
   const [labelData, setLabelData] = useState<PrintableLabel[]>([]);
   const [filteredLabelData, setFilteredLabelData] = useState<PrintableLabel[]>([]);
-  const [columnFilters, setColumnFilters] = useState({
-    lotNo: "",
-    prodNo: "",
-    partNo: "",
-    partName: "",
-    qty: "",
+  const [columnFilters, setColumnFilters] = useState(() => {
+    const defaultFilters = {
+      lotNo: "",
+      prodNo: "",
+      partNo: "",
+      partName: "",
+      qty: "",
+    };
+    
+    if (!prodNo) return defaultFilters;
+
+    try {
+      const saved = localStorage.getItem("labelDetailFilters");
+      if (saved) {
+        const { prodNo: savedProdNo, filters } = JSON.parse(saved);
+        if (savedProdNo === prodNo) {
+          return filters;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to parse label detail filters", e);
+    }
+    return defaultFilters;
   });
+
+  // Save filters to localStorage
+  useEffect(() => {
+    if (prodNo) {
+      localStorage.setItem("labelDetailFilters", JSON.stringify({
+        prodNo,
+        filters: columnFilters
+      }));
+    }
+  }, [columnFilters, prodNo]);
   const [prodHeader, setProdHeader] = useState<PrintableLabelsResponse['prod_header'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

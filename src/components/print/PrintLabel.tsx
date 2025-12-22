@@ -234,13 +234,13 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
           {/* ROW 10-11: Status Values (2 rows combined) */}
           <View style={[styles.lastRow, { height: ROW_HEIGHT * 2 }]}>
             <View style={[styles.cell, { width: COL_WIDTH * 2, borderRightWidth: 1, borderBottomWidth: 0, justifyContent: 'center' }]}>
-              <Text style={{ fontSize: 8 }}>FG</Text>
+              <Text style={{ fontSize: 10 }}>FG</Text>
             </View>
             <View style={[styles.cell, { width: COL_WIDTH * 2, borderRightWidth: 1, borderBottomWidth: 0, justifyContent: 'center' }]}>
-              <Text style={{ fontSize: 8 }}>{item.qty || 0}</Text>
+              <Text style={{ fontSize: 10 }}>{item.qty || 0}</Text>
             </View>
             <View style={[styles.cell, { width: COL_WIDTH * 2, borderRightWidth: 1, borderBottomWidth: 0, justifyContent: 'center' }]}>
-              <Text style={{ fontSize: 7 }}>OK / NG</Text>
+              <Text style={{ fontSize: 10 }}>OK / NG</Text>
             </View>
             <View style={[styles.cell, { width: COL_WIDTH * 2, borderRightWidth: 1, borderBottomWidth: 0, justifyContent: 'center' }]}>
               <Text></Text>
@@ -298,7 +298,7 @@ const SingleLabel = ({ item, prodHeader, qrCode1, qrCode2 }: {
             justifyContent:'center',
             alignItems: 'center'
           }]}>
-            <Text style={{ fontSize: 6 }}>{item.karakteristik || ''}</Text>
+            <Text style={{ fontSize: 10 }}>{item.karakteristik || ''}</Text>
           </View>
         </View>
 

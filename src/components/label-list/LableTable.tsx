@@ -23,23 +23,62 @@ const getColorName = (colorCode: string): string => {
 };
 
 
+interface FilterState {
+  prodIndex: string;
+  prodNo: string;
+  partNo: string;
+  partName: string;
+  customer: string;
+  qtyOrder: string;
+  colorCode: string;
+}
+
 export default function DataTableThree() {
   const navigate = useNavigate();
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  // Initialize from localStorage
+  const [rowsPerPage, setRowsPerPage] = useState(() => {
+    const saved = localStorage.getItem("labelTableRowsPerPage");
+    return saved ? parseInt(saved, 10) : 10;
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [tableRowData, setTableRowData] = useState<ProdHeader[]>([]);
   const [filteredData, setFilteredData] = useState<ProdHeader[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [columnFilters, setColumnFilters] = useState({
-    prodIndex: "",
-    prodNo: "",
-    partNo: "",
-    partName: "",
-    customer: "",
-    qtyOrder: "",
-    colorCode: "",
+  
+  const [columnFilters, setColumnFilters] = useState<FilterState>(() => {
+    const saved = localStorage.getItem("labelTableFilters");
+    try {
+      return saved ? (JSON.parse(saved) as FilterState) : {
+        prodIndex: "",
+        prodNo: "",
+        partNo: "",
+        partName: "",
+        customer: "",
+        qtyOrder: "",
+        colorCode: "",
+      };
+    } catch {
+      return {
+        prodIndex: "",
+        prodNo: "",
+        partNo: "",
+        partName: "",
+        customer: "",
+        qtyOrder: "",
+        colorCode: "",
+      };
+    }
   });
+
+  // Save to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem("labelTableRowsPerPage", rowsPerPage.toString());
+  }, [rowsPerPage]);
+
+  useEffect(() => {
+    localStorage.setItem("labelTableFilters", JSON.stringify(columnFilters));
+  }, [columnFilters]);
 
   // Fetch data from API
   useEffect(() => {
@@ -148,7 +187,7 @@ export default function DataTableThree() {
     setCurrentPage(1);
   };
 
-  const handleColumnFilterChange = (column: keyof typeof columnFilters, value: string) => {
+  const handleColumnFilterChange = (column: keyof FilterState, value: string) => {
     setColumnFilters(prev => ({
       ...prev,
       [column]: value
