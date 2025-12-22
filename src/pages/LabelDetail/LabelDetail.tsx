@@ -14,14 +14,22 @@ import { labelAPI, PrintableLabel, PrintableLabelsResponse } from "../../service
 import { openPDFInNewTab } from "../../components/print/PrintLabel";
 import SpinnerOne from "../../components/ui/spinner/SpinnerOne";
 
+interface LabelDetailFilters {
+  lotNo: string;
+  prodNo: string;
+  partNo: string;
+  partName: string;
+  qty: string;
+}
+
 export default function LabelDetail() {
   const { prodNo } = useParams<{ prodNo: string }>();
   const navigate = useNavigate();
   const [selectedLabels, setSelectedLabels] = useState<Set<number>>(new Set());
   const [labelData, setLabelData] = useState<PrintableLabel[]>([]);
   const [filteredLabelData, setFilteredLabelData] = useState<PrintableLabel[]>([]);
-  const [columnFilters, setColumnFilters] = useState(() => {
-    const defaultFilters = {
+  const [columnFilters, setColumnFilters] = useState<LabelDetailFilters>(() => {
+    const defaultFilters: LabelDetailFilters = {
       lotNo: "",
       prodNo: "",
       partNo: "",
@@ -201,8 +209,8 @@ export default function LabelDetail() {
     navigate('/label-list');
   };
 
-  const handleColumnFilterChange = (column: keyof typeof columnFilters, value: string) => {
-    setColumnFilters(prev => ({
+  const handleColumnFilterChange = (column: keyof LabelDetailFilters, value: string) => {
+    setColumnFilters((prev) => ({
       ...prev,
       [column]: value
     }));
