@@ -8,15 +8,15 @@ import QRCode from 'qrcode';
 export type LabelDataItem = PrintableLabel;
 
 // Constants for label dimensions (100mm x 60mm = 283.46pt x 170.08pt)
-const LABEL_WIDTH = 288;
-const LABEL_HEIGHT = 161;
+const LABEL_WIDTH = 292;
+const LABEL_HEIGHT = 165;
 const COL_WIDTH = LABEL_WIDTH / 12; // ~23.62pt per column
 const ROW_HEIGHT = LABEL_HEIGHT / 11; // ~15.46pt per row
 
 
 const styles = StyleSheet.create({
   page: {
-    padding: 6,
+    padding: 2,
     backgroundColor: '#FFFFFF',
   },
   labelContainer: {
@@ -404,17 +404,17 @@ const LabelDocument = ({ data, prodHeader }: LabelDocumentProps) => {
   return (
     <Document>
       {pages.map((pageLabels, pageIndex) => {
-        const currentDate = new Date();
-        const formattedDate = currentDate.toLocaleDateString('id-ID', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        });
-        const formattedTime = currentDate.toLocaleTimeString('id-ID', {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        });
+        // const currentDate = new Date();
+        // const formattedDate = currentDate.toLocaleDateString('id-ID', {
+        //   year: 'numeric',
+        //   month: '2-digit',
+        //   day: '2-digit',
+        // });
+        // const formattedTime = currentDate.toLocaleTimeString('id-ID', {
+        //   hour: '2-digit',
+        //   minute: '2-digit',
+        //   second: '2-digit',
+        // });
         
         return (
           <Page key={pageIndex} size="A4" orientation="portrait" style={styles.page}>
@@ -439,8 +439,8 @@ const LabelDocument = ({ data, prodHeader }: LabelDocumentProps) => {
               justifyContent: 'space-between',
               fontSize: 8,
             }}>
-              <Text>Printed at {formattedDate} {formattedTime}</Text>
-              <Text>{pageIndex + 1}/{pages.length}</Text>
+              {/* <Text>Printed at {formattedDate} {formattedTime}</Text>
+              <Text>{pageIndex + 1}/{pages.length}</Text> */}
             </View>
           </Page>
         );
@@ -470,17 +470,17 @@ const LabelDocumentWithQR = ({ labelsWithQR, prodHeader }: LabelDocumentWithQRPr
   return (
     <Document>
       {pages.map((pageLabels, pageIndex) => {
-        const currentDate = new Date();
-        const formattedDate = currentDate.toLocaleDateString('id-ID', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        });
-        const formattedTime = currentDate.toLocaleTimeString('id-ID', {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        });
+        // const currentDate = new Date();
+        // const formattedDate = currentDate.toLocaleDateString('id-ID', {
+        //   year: 'numeric',
+        //   month: '2-digit',
+        //   day: '2-digit',
+        // });
+        // const formattedTime = currentDate.toLocaleTimeString('id-ID', {
+        //   hour: '2-digit',
+        //   minute: '2-digit',
+        //   second: '2-digit',
+        // });
         
         return (
           <Page key={pageIndex} size="A4" orientation="portrait" style={styles.page}>
@@ -506,8 +506,8 @@ const LabelDocumentWithQR = ({ labelsWithQR, prodHeader }: LabelDocumentWithQRPr
               justifyContent: 'space-between',
               fontSize: 8,
             }}>
-              <Text>Printed at {formattedDate} {formattedTime}</Text>
-              <Text>{pageIndex + 1}/{pages.length}</Text>
+              {/* <Text>Printed at {formattedDate} {formattedTime}</Text>
+              <Text>{pageIndex + 1}/{pages.length}</Text> */}
             </View>
           </Page>
         );
