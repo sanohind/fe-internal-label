@@ -69,43 +69,55 @@ export default function LabelDetail() {
   const [isPrintingPDF, setIsPrintingPDF] = useState(false);
 
   // Fetch label details from API
-  const fetchLabelDetails = async () => {
+  const fetchLabelDetails = async (isBackground = false) => {
     if (!prodNo) {
-      setError('Prod No is required');
-      setLoading(false);
+      if (!isBackground) {
+        setError('Prod No is required');
+        setLoading(false);
+      }
       return;
     }
 
     try {
-      setLoading(true);
-      setError(null);
-      setIs404Error(false);
+      if (!isBackground) {
+        setLoading(true);
+        setError(null);
+        setIs404Error(false);
+      }
       const response = await labelAPI.getPrintableLabels(prodNo);
 
       if (response.success) {
         setLabelData(response.data);
         setProdHeader(response.prod_header);
       } else {
-        setError(response.message || 'Failed to fetch label details');
+        if (!isBackground) setError(response.message || 'Failed to fetch label details');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching label details';
       
       // Check if it's a 404 error
       if (errorMessage.includes('404') || errorMessage.includes('No printable labels found')) {
-        setIs404Error(true);
-        setError('No printable labels found for this Prod no');
+        if (!isBackground) {
+          setIs404Error(true);
+          setError('No printable labels found for this Prod no');
+        }
       } else {
-        setError(errorMessage);
+        if (!isBackground) setError(errorMessage);
       }
       console.error('Error fetching label details:', err);
     } finally {
-      setLoading(false);
+      if (!isBackground) setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchLabelDetails();
+
+    const intervalId = setInterval(() => {
+      fetchLabelDetails(true);
+    }, 180000);
+
+    return () => clearInterval(intervalId);
   }, [prodNo]);
 
   // Filter label data based on column filters

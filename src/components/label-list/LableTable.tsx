@@ -82,27 +82,41 @@ export default function DataTableThree() {
 
   // Fetch data from API
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (isBackground = false) => {
       try {
-        setLoading(true);
-        setError(null);
+        if (!isBackground) {
+          setLoading(true);
+          setError(null);
+        }
         const response = await labelAPI.getProdHeaders(undefined);
 
         if (response.success) {
           setTableRowData(response.data);
-          setFilteredData(response.data);
+          // We don't need to manually setFilteredData here because the other useEffect 
+          // listening to tableRowData will handle it.
+          // However, to maintain existing behavior for initial load:
+          if (!isBackground) {
+             setFilteredData(response.data);
+          }
         } else {
-          setError(response.message || 'Failed to fetch data');
+          if (!isBackground) setError(response.message || 'Failed to fetch data');
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred while fetching data');
+        if (!isBackground) setError(err instanceof Error ? err.message : 'An error occurred while fetching data');
         console.error('Error fetching prod headers:', err);
       } finally {
-        setLoading(false);
+        if (!isBackground) setLoading(false);
       }
     };
 
     fetchData();
+    
+    // Auto-refresh every 2 minutes (180000 ms)
+    const intervalId = setInterval(() => {
+      fetchData(true);
+    }, 180000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   // Filter data when any column filter changes
